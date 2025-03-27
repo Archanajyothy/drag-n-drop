@@ -1,0 +1,65 @@
+<div cdkDropListGroup class="parent-container">
+    <!-- Left side -->
+    <div class="left-container">
+        <h2 style="color: teal;">Elements</h2>
+        <div cdkDropList [cdkDropListData]="availableElements" class="element-list"
+            cdkDropListSortingDisabled (cdkDropListDropped)="drop($event)" >
+            <div *ngFor="let element of availableElements; trackBy: trackByFn"
+            class="item-box list-hover" cdkDrag >
+            {{ element.label }}
+            <i class="fa-solid fa-grip-vertical" style="color: gray;"></i>
+            </div>
+        </div>
+        <h2 style="color: teal;">Layout</h2>
+        <div cdkDropList [cdkDropListData]="layoutElements" class="element-list"
+            cdkDropListSortingDisabled (cdkDropListDropped)="drop($event)" >
+            <div *ngFor="let elem of layoutElements; trackBy: trackByFn"
+            class="item-box list-hover" cdkDrag >
+            {{ elem.label }}
+            <i class="fa-solid fa-grip-vertical" style="color: gray;"></i>
+            </div>
+        </div>
+    </div>
+        
+    <!-- Right side -->
+    <div class="right-main">
+        <div class="right-header">
+            <h2 style="color: teal;">Form</h2>
+            <button style="background: teal; color: white;" (click)="submitForm()">Submit</button>
+        </div>
+    <div >
+        
+    <div [formGroup]="form" class="right-container" cdkDropList [cdkDropListData]="formElements" (cdkDropListDropped)="drop($event)">
+        <div *ngFor="let element of formElements; let i = index; trackBy: trackByFn" class="item-box" style="display: flex; flex-direction: column; align-items: flex-start;"
+        cdkDrag>
+            <label for="element?.type">{{element?.label}}</label>
+            <div class="right-fields">
+                <div class="right-fields-div">
+                    <ng-container [ngSwitch]="element.type">
+                        <input *ngSwitchCase="'text'" [formControlName]="element.id" placeholder="Text Input" />
+                        <input *ngSwitchCase="'number'" type="number" [formControlName]="element.id" placeholder="Number Input" />
+                        <h2 *ngSwitchCase="'heading'">{{ element.label }}</h2>
+                    </ng-container>
+                    <!-- If the element is a section, create a drop zone inside it -->
+                    <div *ngIf="element.type === 'section'" class="section-container">
+                        <h3>{{ element.label }}</h3>
+
+                        <!-- Drop Area Inside Section -->
+                        <section cdkDropList 
+                                [cdkDropListData]="element.children" 
+                                (cdkDropListDropped)="drop($event, element)">
+                                
+                            <div *ngFor="let child of element.children; trackBy: trackByFn" 
+                                class="child-element" cdkDrag>
+                                {{ child.label }}
+                            </div>
+                        </section>
+                    </div>
+                    
+                </div>
+                <button (click)="removeElement(i)"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
