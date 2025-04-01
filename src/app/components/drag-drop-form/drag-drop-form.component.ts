@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -38,16 +38,15 @@ export class DragDropFormComponent {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
       const draggedElement = { ...event.previousContainer.data[event.previousIndex], children: [] };
-     console.log(section, 'section...');
-     
-      if (section) {
-        console.log(section,'inside section...');
-        
+  
+      if (section && section.type === 'section') {
+        // If dropping inside a section, push to its children
         section.children.push(draggedElement);
       } else {
+        // Otherwise, push to main formElements array
         this.formElements.push(draggedElement);
       }
-  
+    
       const control = this.fb.group({
         id: draggedElement.id,
         type: draggedElement.type,
@@ -55,14 +54,21 @@ export class DragDropFormComponent {
         children: this.fb.array([]),
       });
   
-      if (section) {
-        (section.formControl as FormArray).push(control);
+      if (section && section.type === 'section') {
+        // Push control to section's FormArray (for nested elements)
+        const sectionControl = this.findFormControl(section.id);
+        (sectionControl?.get('children') as FormArray).push(control);
       } else {
+        // Push to main formArray
         this.formArray.push(control);
       }
     }
   }
   
+  
+  findFormControl(sectionId: string) {
+    return this.formArray.controls.find(control => control.get('id')?.value === sectionId);
+  }
 
   removeElement(index: number, section?: any) {
     if (section) {
