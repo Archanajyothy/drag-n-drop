@@ -1,0 +1,80 @@
+<div cdkDropListGroup class="parent-container">
+  <!-- Left side -->
+  <div class="left-container">
+    <h2 style="color: teal">Elements</h2>
+    <div
+      #listOne="cdkDropList"
+      [cdkDropListConnectedTo]="['listTwo']"
+      cdkDropList
+      [cdkDropListData]="availableElements"
+      class="element-list"
+      cdkDropListSortingDisabled
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div
+        *ngFor="let element of availableElements; trackBy: trackByFn"
+        class="item-box list-hover"
+        cdkDrag
+      >
+        {{ element.label }}
+        <i class="fa-solid fa-grip-vertical" style="color: gray"></i>
+      </div>
+    </div>
+
+    <h2 style="color: teal">Layout</h2>
+    <div
+      #listLayout="cdkDropList"
+      [cdkDropListConnectedTo]="['listTwo']"
+      cdkDropList
+      [cdkDropListData]="layoutElements"
+      class="element-list"
+      cdkDropListSortingDisabled
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div
+        *ngFor="let elem of layoutElements; trackBy: trackByFn"
+        class="item-box list-hover"
+        cdkDrag
+      >
+        {{ elem.label }}
+        <i class="fa-solid fa-grip-vertical" style="color: gray"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right side -->
+  <div class="right-main">
+    <div class="right-header">
+      <h2 style="color: teal">Form</h2>
+      <button style="background: teal; color: white" (click)="submitForm()">
+        Submit
+      </button>
+    </div>
+
+    <div [formGroup]="form" class="right-container">
+      <div
+        #listTwo="cdkDropList"
+        *ngFor="let section of formElements"
+        class="section-container"
+        cdkDropList
+        [cdkDropListData]="section.children"
+        [cdkDropListConnectedTo]="['listOne']"
+        (cdkDropListDropped)="drop($event, section)"
+      >
+        <h3>{{ section.label }}</h3>
+        <div
+          *ngFor="let child of section.children; trackBy: trackByFn"
+          class="child-element"
+          cdkDrag
+        >
+          {{ child.label }}
+        </div>
+
+        <!-- Check if section has no children -->
+        <div *ngIf="!section.children.length" class="no-elements-placeholder">
+          No elements in this section.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
